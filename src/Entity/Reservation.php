@@ -34,6 +34,10 @@ class Reservation
     #[ORM\JoinColumn(nullable: false)]
     private ?Vehicle $vehicle = null;
 
+    public function __construct()
+    {
+        $this->setDateCreated(new \DateTime());
+    }
 
     public function getId(): ?int
     {
