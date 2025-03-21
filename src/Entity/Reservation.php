@@ -26,9 +26,14 @@ class Reservation
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $note = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'reservations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $user;
+
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
+    private ?Vehicle $vehicle = null;
+
 
     public function getId(): ?int
     {
@@ -91,6 +96,18 @@ class Reservation
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getVehicle(): ?Vehicle
+    {
+        return $this->vehicle;
+    }
+
+    public function setVehicle(?Vehicle $vehicle): static
+    {
+        $this->vehicle = $vehicle;
 
         return $this;
     }
