@@ -76,8 +76,6 @@ final class ReservationController extends AbstractController
 
         try {
             if ($form->isSubmitted() && $form->isValid()) {
-
-                $vehicle = $form['vehicle']->getData();
                 $date_from = $form['reservation_date_from']->getData();
                 $date_to = $form['reservation_date_to']->getData();
 

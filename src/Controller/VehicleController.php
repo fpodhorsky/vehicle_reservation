@@ -113,24 +113,36 @@ final class VehicleController extends AbstractController
     #[Route('/delete/{id}', name: 'delete')]
     public function delete(int $id): Response
     {
-        $vehicle = $this->vehicleRepository->find($id);
+        try {
+            $vehicle = $this->vehicleRepository->find($id);
 
-        if (!$vehicle) {
+            if (!$vehicle) {
+                $this->addFlash(
+                    'danger',
+                    'Vozidlo neexistuje.'
+                );
+
+                return $this->redirectToRoute('app_vehicle_list');
+            }
+
+            $reservations = $vehicle->getReservations();
+            $count = sizeof($reservations);
+
+            $this->entityManager->remove($vehicle);
+            $this->entityManager->flush();
+
             $this->addFlash(
-                'danger',
-                'Vozidlo neexistuje.'
+                'success',
+                'Vozidlo ' . $vehicle->getNote() . ' úspěšně odstraněno. Počet rezervací odstraněno: ' . $count
             );
 
-            return $this->redirectToRoute('app_vehicle_list');
+        } catch (Exception $e) {
+            $this->addFlash(
+                'danger',
+                "Vozidlo nemohlo být smazáno. Ujistěte se, zda toto vozidlo existuje."
+
+            );
         }
-
-        $this->entityManager->remove($vehicle);
-        $this->entityManager->flush();
-
-        $this->addFlash(
-            'danger',
-            'Vozidlo ' . $id . ' bylo odstraněno.'
-        );
 
         return $this->redirectToRoute('app_vehicle_list');
     }

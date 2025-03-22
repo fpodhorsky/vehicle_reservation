@@ -32,8 +32,10 @@
                     <td class="text-center">
                         <a href="{{ path('app_vehicle_edit', {id: vehicle.id}) }}"
                            class="btn btn-sm btn-warning">Změnit</a>
-                        <a href="{{ path('app_vehicle_delete', {id: vehicle.id}) }}"
-                           class="btn btn-sm btn-danger">Odstranit</a>
+                        <a class="btn btn-sm btn-danger text-white"
+                           data-url="{{ path('app_vehicle_delete', { 'id': vehicle.id }) }}" data-toggle="modal"
+                           data-spz="{{ vehicle.spz | upper }}" data-note="{{ vehicle.note }}"
+                           data-target="#deleteVehicleModal">Odstranit</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -41,4 +43,41 @@
         </table>
     </div>
 
+    <div class="modal fade" id="deleteVehicleModal" tabindex="-1" role="dialog"
+         aria-labelledby="deleteVehicleModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteVehicleModalLongTitle">Odstranit vozidlo?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Odstranit vozidlo
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Ne</button>
+                    <a href="#" type="button" id="link" class="btn btn-danger">Ano</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+{% block javascripts %}
+    <script>
+        $('#deleteVehicleModal').on('show.bs.modal', function (event) {
+            let button = $(event.relatedTarget);
+            let spz = button.data('spz');
+            let note = button.data('note');
+            let url = button.data('url');
+            let modal = $(this);
+            modal.find('.modal-title').text('Odstranit vozidlo?');
+            modal.find('.modal-body').text('Vážně chcete odstranit vozidlo ' + note + " (SPZ: " + spz + ")");
+            modal.find('#link').attr("href", url);
+        });
+    </script>
 {% endblock %}
