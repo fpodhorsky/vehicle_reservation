@@ -68,7 +68,7 @@
                     {% endif %}
                     {# SPRÁVA UŽIVATELŮ #}
                     {% if is_granted('ROLE_ADMIN') %}
-                        <li><a class="nav-link" href=""><span class="fas fa-user-edit"></span> Správa uživatelů</a></li>
+                        <li><a class="nav-link" href="{{ path('app_user_list') }}"><span class="fas fa-user-edit"></span> Správa uživatelů</a></li>
                     {% endif %}
                 </ul>
                 {# RIGHT ALIGN NAVBAR #}

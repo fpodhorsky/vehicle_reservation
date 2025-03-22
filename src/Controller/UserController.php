@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Reservation;
+use App\Entity\User;
+use App\Form\UserEditType;
 use App\Repository\ReservationRepository;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,6 +51,59 @@ final class UserController extends AbstractController
 
         return $this->render('user/reservations.html.twig', array(
             'reservations' => $reservations,
+        ));
+    }
+
+    #[IsGranted('ROLE_ADMIN')]
+    #[Route('/list', name: 'list')]
+    public function list(): Response
+    {
+        $users = $this->entityManager->getRepository(User::class)->findAll();
+
+        return $this->render('user/list.html.twig', array(
+            'users' => $users,
+        ));
+    }
+
+    #[IsGranted('ROLE_ADMIN')]
+    #[Route('/edit/{id}', name: 'edit')]
+    public function edit(Request $request, int $id): Response
+    {
+        $user = $this->entityManager->getRepository(User::class)->find($id);
+
+        if ($user->getId() == $this->getUser()->getId()) {
+            $this->addFlash(
+                'warning',
+                'Právě editujete sebe! Pozor na uživatelská práva!'
+            );
+        }
+
+        $form = $this->createForm(UserEditType::class, $user);
+
+        $form->handleRequest($request);
+
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+
+                $this->addFlash(
+                    'success',
+                    'Uživatel byl úspěšně změněn.'
+                );
+
+                return $this->redirectToRoute('app_user_list');
+            }
+        } catch (Exception $e) {
+            $this->addFlash(
+                'danger',
+                "Uživatel nemohl být změněn. Ujistěte se, zda login již nepoužívá někdo jiný."
+            );
+        }
+
+        return $this->render('user/edit.html.twig', array(
+            'form' => $form->createView(),
+
         ));
     }
 }
