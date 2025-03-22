@@ -6,4 +6,7 @@ controllers:
 
 index:
   path: /
-  controller: App\Controller\UserController::index
+  controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::urlRedirectAction
+  defaults:
+    path: /user/my-reservations
+    permanent: true
