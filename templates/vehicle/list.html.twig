@@ -1,0 +1,44 @@
+{% extends "base.html.twig" %}
+{% block title %}Seznam vozidel{% endblock %}
+{% block body %}
+
+    <div class="panel panel-info col-sm-12">
+        <div class="panel-heading">
+            <h3>Seznam vozidel</h3>
+        </div>
+        <table class="table table-striped table-light table-hover">
+            <thead>
+            <tr>
+                <th class="text-center">#</th>
+                <th class="text-center">SPZ</th>
+                <th>Popis vozidla</th>
+                <th class="text-center">Aktivováno</th>
+                <th class="text-center">Akce</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for vehicle in vehicles %}
+                <tr>
+                    <td class="text-center">{{ vehicle.id }}</td>
+                    <td class="text-center">{{ vehicle.spz | upper }}</td>
+                    <td style="white-space:pre-wrap; word-wrap:break-word; max-width: 15%">{{ vehicle.note }}</td>
+                    <td class="text-center">
+                        {% if vehicle.isDeactivated %}
+                            Ne
+                        {% else %}
+                            Ano
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <a href="{{ path('app_vehicle_edit', {id: vehicle.id}) }}"
+                           class="btn btn-sm btn-warning">Změnit</a>
+                        <a href="{{ path('app_vehicle_delete', {id: vehicle.id}) }}"
+                           class="btn btn-sm btn-danger">Odstranit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
