@@ -3,13 +3,13 @@
 {% block title %}Přidat vozidlo{% endblock %}
 
 {% block body %}
-    <div class="panel panel-success col-sm-8">
+    <div class="panel panel-success">
         <div class="panel-heading">
             <h3>Přidat vozidlo</h3>
         </div>
-        {{ dump(vehicle) }}
-{#        {{ form_start(form) }}#}
-{#        {{ form_widget(form) }}#}
-{#        {{ form_end(form) }}#}
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {{ form_end(form) }}
     </div>
 {% endblock %}

@@ -10,7 +10,7 @@
             <thead>
             <tr>
                 <th class="text-center">#</th>
-                <th class="text-center">SPZ</th>
+                <th>SPZ</th>
                 <th>Popis vozidla</th>
                 <th class="text-center">Aktivováno</th>
                 <th class="text-center">Akce</th>
@@ -20,7 +20,7 @@
             {% for vehicle in vehicles %}
                 <tr>
                     <td class="text-center">{{ vehicle.id }}</td>
-                    <td class="text-center">{{ vehicle.spz | upper }}</td>
+                    <td>{{ vehicle.spz | upper }}</td>
                     <td style="white-space:pre-wrap; word-wrap:break-word; max-width: 15%">{{ vehicle.note }}</td>
                     <td class="text-center">
                         {% if vehicle.isDeactivated %}

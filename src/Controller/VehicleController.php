@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Vehicle;
+use App\Form\VehicleFormType;
 use App\Repository\VehicleRepository;
+use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -32,16 +35,40 @@ final class VehicleController extends AbstractController
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/create', name: 'create')]
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        $vehicle = new Vehicle();
+
+        $form = $this->createForm(VehicleFormType::class, $vehicle);
+
+        $form->handleRequest($request);
+
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->entityManager->persist($vehicle);
+                $this->entityManager->flush();
+
+                $this->addFlash(
+                    'success',
+                    'Vozidlo úspěšně přidáno'
+                );
+                return $this->redirectToRoute('app_vehicle_list');
+            }
+        } catch (Exception $e) {
+            $this->addFlash(
+                'danger',
+                "Vozidlo nemohlo být přidáno. Ujistěte se, zda již není přidáno."
+            );
+        }
+
         return $this->render('vehicle/create.html.twig', [
-            'vehicle' => new Vehicle()
+            'form' => $form->createView()
         ]);
     }
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/edit/{id}', name: 'edit')]
-    public function edit(int $id): Response
+    public function edit(Request $request, int $id): Response
     {
         $vehicle = $this->vehicleRepository->find($id);
 
@@ -54,7 +81,32 @@ final class VehicleController extends AbstractController
             return $this->redirectToRoute('app_vehicle_list');
         }
 
-        return $this->render('vehicle/edit.html.twig', ['vehicle' => $vehicle]);
+        $form = $this->createForm(VehicleFormType::class, $vehicle);
+
+        $form->handleRequest($request);
+
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->entityManager->persist($vehicle);
+                $this->entityManager->flush();
+
+                $this->addFlash(
+                    'success',
+                    'Změna vozidla byla úspěšná.'
+                );
+
+                return $this->redirectToRoute('cars');
+            }
+        } catch (Exception $e) {
+            $this->addFlash(
+                'danger',
+                "Vozidlo nemohlo být změněno. Ujistěte se, zda již toto vozidlo se stejnou SPZ nebylo přidáno."
+            );
+        }
+
+        return $this->render('vehicle/edit.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
     #[IsGranted('ROLE_ADMIN')]
